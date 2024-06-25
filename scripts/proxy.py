@@ -1,29 +1,48 @@
-class Subject:
+from abc import ABC, abstractmethod
+
+# Service interface
+class Subject(ABC):
+    @abstractmethod
     def request(self):
         pass
 
+# ConcreteService
 class RealSubject(Subject):
     def request(self):
         print("RealSubject: Handling request.")
 
+# ProxyService
 class Proxy(Subject):
-    def __init__(self, real_subject: RealSubject):
-        self._real_subject = real_subject
+    def __init__(self):
+        self._real_subject = RealSubject() # ConcreteService
 
     def request(self):
-        if self.check_access():
-            self._real_subject.request()
-            self.log_access()
+        # Access control or additional logic can be added here
+        print("Proxy: Checking access before handling request.")
+        self._real_subject.request()
 
-    def check_access(self):
-        print("Proxy: Checking access prior to firing a real request.")
-        return True
+# Client code
+def client_code(subject: Subject):
+    subject.request()
 
-    def log_access(self):
-        print("Proxy: Logging the time of request.")
-
-        
-if __name__ == "__main__":
+# Usage
+def main():
     real_subject = RealSubject()
-    proxy = Proxy(real_subject)
-    proxy.request()
+    proxy = Proxy()
+
+    print("Client: Directly interacting with the RealSubject:")
+    client_code(real_subject)
+
+    print("\nClient: Indirectly interacting with the Proxy:")
+    client_code(proxy)
+
+if __name__ == "__main__":
+    main()
+
+## Output
+# Client: Directly interacting with the RealSubject:
+# RealSubject: Handling request.
+
+# Client: Indirectly interacting with the Proxy:
+# Proxy: Checking access before handling request.
+# RealSubject: Handling request.

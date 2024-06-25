@@ -1,48 +1,74 @@
 from abc import ABC, abstractmethod
 
-class AlgorithmTemplate(ABC):
-
-    def run(self):
-        self.step_one()
-        self.step_two()
-        self.step_three()
+# Abstract Class
+class DataProcessor(ABC):
+    def process_data(self):   # templateMethod()
+        self.read_data()
+        self.parse_data()
+        self.analyze_data()
+        self.display_results()
 
     @abstractmethod
-    def step_one(self):
+    def read_data(self):
         pass
 
     @abstractmethod
-    def step_two(self):
+    def parse_data(self):
         pass
 
     @abstractmethod
-    def step_three(self):
+    def analyze_data(self):
         pass
 
-class Algorithm1(AlgorithmTemplate):
+    def display_results(self):
+        print("Displaying results...")
 
-    def step_one(self):
-        print("Running step 1 for Algorithm 1")
+# Concrete Class1
+class XMLDataProcessor(DataProcessor):
+    def read_data(self):
+        print("Reading data from XML file...")
 
-    def step_two(self):
-        print("Running step 2 for Algorithm 1")
+    def parse_data(self):
+        print("Parsing XML data...")
 
-    def step_three(self):
-        print("Running step 3 for Algorithm 1")
+    def analyze_data(self):
+        print("Analyzing XML data...")
 
-class Algorithm2(AlgorithmTemplate):
+# Concrete Class2
+class CSVDataProcessor(DataProcessor):
+    def read_data(self):
+        print("Reading data from CSV file...")
 
-    def step_one(self):
-        print("Running step 1 for Algorithm 2")
+    def parse_data(self):
+        print("Parsing CSV data...")
 
-    def step_two(self):
-        print("Running step 2 for Algorithm 2")
+    def analyze_data(self):
+        print("Analyzing CSV data...")
 
-    def step_three(self):
-        print("Running step 3 for Algorithm 2")
+# Client code
+def client_code():
+    xml_processor = XMLDataProcessor()
+    csv_processor = CSVDataProcessor()
 
-algorithm1 = Algorithm1()
-algorithm1.run()
+    print("Processing XML data:")
+    xml_processor.process_data()
 
-algorithm2 = Algorithm2()
-algorithm2.run()
+    print("\nProcessing CSV data:")
+    csv_processor.process_data()
+
+# Usage
+client_code()
+
+
+## Output
+# Processing XML data:
+# Reading data from XML file...
+# Parsing XML data...
+# Analyzing XML data...
+# Displaying results...
+
+# Processing CSV data:
+# Reading data from CSV file...
+# Parsing CSV data...
+# Analyzing CSV data...
+# Displaying results...

@@ -1,46 +1,73 @@
-class Handler:
-    def __init__(self, successor=None):
-        self._successor = successor
+class Handler:  # BaseHandler
+    def __init__(self):
+        self.next_handler = None
 
-    def handle_request(self, request):
-        handled = self._handle(request)
+    def set_next(self, handler):   # setNext method
+        self.next_handler = handler
+        return handler
 
-        if not handled:
-            self._successor.handle_request(request)
+    def handle(self, request):  
+        if self.next_handler:
+            return self.next_handler.handle(request)
+        return None
 
-    def _handle(self, request):
-        raise NotImplementedError('Must provide implementation in subclass')
+class LowLevelSupport(Handler):
+    def handle(self, request):
+        if request == "low":
+            return "LowLevelSupport: Handling low-level support request."
+        else:
+            return super().handle(request)
 
+class MidLevelSupport(Handler):
+    def handle(self, request):
+        if request == "mid":
+            return "MidLevelSupport: Handling mid-level support request."
+        else:
+            return super().handle(request)
 
-class ConcreteHandlerA(Handler):
-    def _handle(self, request):
-        if 0 < request <= 10:
-            print(f'Request {request} handled by ConcreteHandlerA')
-            return True
+class HighLevelSupport(Handler):
+    def handle(self, request):
+        if request == "high":
+            return "HighLevelSupport: Handling high-level support request."
+        else:
+            return super().handle(request)
 
+# Client code
+def client_code(handler, request):
+    result = handler.handle(request)
+    if result:
+        print(result)
+    else:
+        print("No handler could handle the request.")
 
-class ConcreteHandlerB(Handler):
-    def _handle(self, request):
-        if 10 < request <= 20:
-            print(f'Request {request} handled by ConcreteHandlerB')
-            return True
+# Usage
+low_support = LowLevelSupport()
+mid_support = MidLevelSupport()
+high_support = HighLevelSupport()
 
+low_support.set_next(mid_support).set_next(high_support)
 
-class ConcreteHandlerC(Handler):
-    def _handle(self, request):
-        if 20 < request <= 30:
-            print(f'Request {request} handled by ConcreteHandlerC')
-            return True
+print("Client: Sending a low-level request.")
+client_code(low_support, "low")
 
+print("\nClient: Sending a mid-level request.")
+client_code(low_support, "mid")
 
-class DefaultHandler(Handler):
-    def _handle(self, request):
-        print(f'End of chain, no handler for {request}')
-        return True
+print("\nClient: Sending a high-level request.")
+client_code(low_support, "high")
 
-if __name__ == '__main__':
-    handler_chain = ConcreteHandlerA(ConcreteHandlerB(ConcreteHandlerC(DefaultHandler())))
-    requests = [2, 5, 14, 22, 18, 3, 35]
+print("\nClient: Sending an unknown request.")
+client_code(low_support, "unknown")
 
-    for request in requests:
-        handler_chain.handle_request(request)
+## Output
+# Client: Sending a low-level request.
+# LowLevelSupport: Handling low-level support request.
+
+# Client: Sending a mid-level request.
+# MidLevelSupport: Handling mid-level support request.
+
+# Client: Sending a high-level request.
+# HighLevelSupport: Handling high-level support request.
+
+# Client: Sending an unknown request.
+# No handler could handle the request.

@@ -1,20 +1,30 @@
-class Adaptee:  
-    def specific_request(self):
-        return "Specific request."
+# Adaptee
+class OldPrinter:
+    def print_message(self, message):  # This is specificRequest()
+        print(f"Old Printer: {message}")
 
-class Target:
-    def request(self):
-        return "Generic request."
+# Target Interface
+class NewPrinterInterface:
+    def print(self, text):
+        pass
 
-class Adapter(Target): 
-    def __init__(self, adaptee):
-        self.adaptee = adaptee
+# Adapter
+class PrinterAdapter(NewPrinterInterface,OldPrinter):
+    def __init__(self, old_printer):
+        self.old_printer = old_printer
 
-    def request(self):
-        return self.adaptee.specific_request()
+    def print(self, text):
+        self.old_printer.print_message(text)  # Adaptee.specificRequest()
 
-if __name__ == "__main__":
-    adaptee = Adaptee()
-    adapter = Adapter(adaptee)
+# Client 
+def client_code(printer):
+    printer.print("Hello, World!")
 
-    print(adapter.request())
+# Usage
+old_printer = OldPrinter()
+adapter = PrinterAdapter(old_printer)
+client_code(adapter)
+
+
+## Output
+# Old Printer: Hello, World!

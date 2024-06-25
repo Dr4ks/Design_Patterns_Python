@@ -1,62 +1,74 @@
-class Subject:
-    def __init__(self):
-        self._observers = []
+from abc import ABC, abstractmethod
+from typing import List
 
-    def attach(self, observer):
-        if observer not in self._observers:
-            self._observers.append(observer)
-
-    def detach(self, observer):
-        try:
-            self._observers.remove(observer)
-        except ValueError:
-            pass
-
-    def notify(self, *args, **kwargs):
-        for observer in self._observers:
-            observer.update(*args, **kwargs)
-
-
-class Observer:
-    def update(self, *args, **kwargs):
+# Observer interface
+class Observer(ABC):
+    @abstractmethod
+    def update(self, price: float):
         pass
 
+# Observable
+class Subject(ABC):
+    @abstractmethod
+    def register_observer(self, observer: Observer):
+        pass
 
-class ConcreteSubject(Subject):
-    def __init__(self):
-        super().__init__()
-        self._state = None
+    @abstractmethod
+    def remove_observer(self, observer: Observer):
+        pass
 
-    @property
-    def state(self):
-        return self._state
+    @abstractmethod
+    def notify_observers(self, price: float):
+        pass
 
-    @state.setter
-    def state(self, state):
-        self._state = state
-        self.notify(self._state)
+# Concrete Observer
+class StockObserver(Observer):
+    def __init__(self, name: str):
+        self.name = name
+
+    def update(self, price: float):
+        print(f"{self.name} - Price updated: {price}")
+
+# Concrete Observable
+class Stock(Subject):
+    def __init__(self, symbol: str):
+        self.symbol = symbol
+        self.price = 0.0
+        self.observers: List[Observer] = []
+
+    def register_observer(self, observer: Observer):
+        self.observers.append(observer)
+
+    def remove_observer(self, observer: Observer):
+        self.observers.remove(observer)
+
+    def notify_observers(self, price: float):
+        for observer in self.observers:
+            observer.update(price)
+
+    def set_price(self, price: float):
+        self.price = price
+        self.notify_observers(self.price)
+
+# Client code
+def client_code():
+    stock = Stock("AAPL")
+
+    observer1 = StockObserver("Observer 1")
+    observer2 = StockObserver("Observer 2")
+
+    stock.register_observer(observer1)
+    stock.register_observer(observer2)
+
+    stock.set_price(150.0)
+    stock.set_price(155.0)
+
+# Usage
+client_code()
 
 
-class ConcreteObserverA(Observer):
-    def update(self, state):
-        print(f"Observer A received the state {state}")
-
-
-class ConcreteObserverB(Observer):
-    def update(self, state):
-        print(f"Observer B received the state {state}")
-
-
-subject = ConcreteSubject()
-observer_a = ConcreteObserverA()
-observer_b = ConcreteObserverB()
-
-subject.attach(observer_a)
-subject.attach(observer_b)
-
-subject.state = "state 1"
-subject.state = "state 2"
-
-subject.detach(observer_b)
-
-subject.state = "state 3"
+## Output
+# Observer 1 - Price updated: 150.0
+# Observer 2 - Price updated: 150.0
+# Observer 1 - Price updated: 155.0
+# Observer 2 - Price updated: 155.0

@@ -1,32 +1,52 @@
 from abc import ABC, abstractmethod
 
-class Animal(ABC):
+# Product interface
+class Transport(ABC):
     @abstractmethod
-    def speak(self):
+    def deliver(self):
         pass
 
-class Dog(Animal):
-    def speak(self):
-        return "Woof!"
+# Concrete ProductA
+class Truck(Transport):
+    def deliver(self):
+        return "Delivering by truck"
 
-class Cat(Animal):
-    def speak(self):
-        return "Meow!"
+# Concrete ProductB
+class Ship(Transport):
+    def deliver(self):
+        return "Delivering by ship"
 
-class AnimalFactory:
-    @staticmethod
-    def create_animal(animal_type):
-        if animal_type == "Dog":
-            return Dog()
-        elif animal_type == "Cat":
-            return Cat()
-        else:
-            raise Exception(f"Invalid animal type: {animal_type}")
+# Creator
+class Logistic(ABC):
+    @abstractmethod
+    def create_transport(self):
+        pass
 
-animal_factory = AnimalFactory()
+    def plan_delivery(self):
+        transport = self.create_transport()
+        return f"Planning delivery using {transport.deliver()}"
 
-dog = animal_factory.create_animal("Dog")
-print(dog.speak()) 
+# Concrete CreatorA
+class RoadLogistic(Logistic):
+    def create_transport(self):
+        return Truck()
 
-cat = animal_factory.create_animal("Cat")
-print(cat.speak()) 
+# Concrete CreatorB
+class SeaLogistic(Logistic):
+    def create_transport(self):
+        return Ship()
+
+# Client code
+def client_code(logistic):
+    print(logistic.plan_delivery())
+
+# Usage
+road_logistic = RoadLogistic()
+sea_logistic = SeaLogistic()
+
+client_code(road_logistic)
+client_code(sea_logistic)
+
+## Output
+# Planning delivery using Delivering by truck
+# Planning delivery using Delivering by ship

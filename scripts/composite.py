@@ -1,37 +1,58 @@
 from abc import ABC, abstractmethod
 
-class Component(ABC):
+# Component
+class Graphic(ABC):
     @abstractmethod
-    def operation(self):
+    def draw(self):
         pass
 
-class Composite(Component):
+# Leaf
+class Circle(Graphic):
+    def draw(self):
+        print("Circle")
+
+# Leaf
+class Square(Graphic):
+    def draw(self):
+        print("Square")
+
+# Composite
+class CompositeGraphic(Graphic):
     def __init__(self):
-        self._children = []
+        self.children = [] # components
 
-    def add(self, component):
-        self._children.append(component)
+    def add(self, graphic):  # add component
+        self.children.append(graphic)
 
-    def remove(self, component):
-        self._children.remove(component)
+    def remove(self, graphic):  # remove component
+        self.children.remove(graphic)
 
-    def operation(self):
-        for child in self._children:
-            child.operation()
+    def draw(self):
+        for child in self.children:
+            child.draw()
 
-class Leaf(Component):
-    def operation(self):
-        pass
+# Client code
+def client_code(graphic):
+    graphic.draw()
 
+# Usage
+circle1 = Circle()
+circle2 = Circle()
+square1 = Square()
 
-root = Composite()
-root.add(Leaf())
-root.add(Leaf())
+composite1 = CompositeGraphic()
+composite1.add(circle1)
+composite1.add(circle2)
 
-child = Composite()
-child.add(Leaf())
-child.add(Leaf())
+composite2 = CompositeGraphic()
+composite2.add(square1)
+composite2.add(composite1)
 
-root.add(child)
+print("Client: Drawing a composite graphic with nested components:")
+client_code(composite2)
 
-root.operation()
+## Output
+# Client: Drawing a composite graphic with nested components:
+# Square
+# Circle
+# Circle

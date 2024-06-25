@@ -1,31 +1,44 @@
-class SortStrategy:
-    def sort(self, data):
+from abc import ABC, abstractmethod
+
+# Context
+class PaymentProcessor:
+    def __init__(self, strategy):
+        self._strategy = strategy
+
+    def set_strategy(self, strategy):
+        self._strategy = strategy
+
+    def process_payment(self, amount):
+        self._strategy.process_payment(amount)
+
+# Strategy
+class PaymentStrategy(ABC):
+    @abstractmethod
+    def process_payment(self, amount):
         pass
 
-class QuickSortStrategy(SortStrategy):
-    def sort(self, data):
-        print("Sorting using QuickSort")
-        return sorted(data)
+# Concrete Strategie1
+class CreditCardStrategy(PaymentStrategy):
+    def process_payment(self, amount):
+        print(f"Payment of ${amount} processed using Credit Card.")
 
-class MergeSortStrategy(SortStrategy):
-    def sort(self, data):
-        print("Sorting using MergeSort")
-        return sorted(data)
+# Concrete Strategie2
+class PayPalStrategy(PaymentStrategy):
+    def process_payment(self, amount):
+        print(f"Payment of ${amount} processed using PayPal.")
 
-class Sorter:
-    def __init__(self, strategy):
-        self.strategy = strategy
+# Client code
+def client_code():
+    payment_processor = PaymentProcessor(CreditCardStrategy())
+    payment_processor.process_payment(100)
 
-    def sort_data(self, data):
-        return self.strategy.sort(data)
+    payment_processor.set_strategy(PayPalStrategy())
+    payment_processor.process_payment(200)
 
-data = [5, 3, 1, 4, 2]
-strategy = QuickSortStrategy()
-sorter = Sorter(strategy)
-result = sorter.sort_data(data)
-print(result)
+# Usage
+client_code()
 
-strategy = MergeSortStrategy()
-sorter = Sorter(strategy)
-result = sorter.sort_data(data)
-print(result)
+## Output
+# Payment of $100 processed using Credit Card.
+# Payment of $200 processed using PayPal.
+   
